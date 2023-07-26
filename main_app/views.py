@@ -1,12 +1,9 @@
 from django.shortcuts import render
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .models import Cat
+
 
 # Create your views here.
-
-# Usually a Model is used
-cats = [
-    {"name": "Lolo", "breed": "tabby", "description": "furry little demon", "age": 3},
-    {"name": "Sachi", "breed": "calico", "description": "gentle and loving", "age": 2},
-]
 
 
 def home(request):
@@ -19,6 +16,7 @@ def about(request):
 
 
 def cats_index(request):
+    cats = Cat.objects.all()
     return render(
         request,
         "cats/index.html",
@@ -26,3 +24,30 @@ def cats_index(request):
             "cats": cats,
         },
     )
+
+
+# second parameter is the same name as the variable name in the route which was cat_id
+def cats_detail(request, cat_id):
+    cat = Cat.objects.get(id=cat_id)
+    return render(
+        request,
+        "cats/detail.html",
+        {
+            "cat": cat,
+        },
+    )
+
+
+class CatCreate(CreateView):
+    model = Cat
+    fields = "__all__"
+
+
+class CatUpdate(UpdateView):
+    model = Cat
+    fields = ["breed", "description", "age"]
+
+
+class CatDelete(DeleteView):
+    model = Cat
+    success_url = "/cats/"
